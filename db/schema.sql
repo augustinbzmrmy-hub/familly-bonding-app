@@ -1,0 +1,80 @@
+CREATE DATABASE IF NOT EXISTS family_bonding_db;
+USE family_bonding_db;
+
+CREATE TABLE IF NOT EXISTS Family (
+    family_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    family_name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS User (
+    user_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(50) DEFAULT 'FAMILY_MEMBER', -- SYSTEM_ADMIN, FAMILY_ADMIN, FAMILY_MEMBER, GUEST
+    family_id INT,
+    FOREIGN KEY (family_id) REFERENCES Family(family_id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS Chartboard_Post (
+    post_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES User(user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Comment (
+    comment_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_id INT NOT NULL,
+    post_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES User(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (post_id) REFERENCES Chartboard_Post(post_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Challenge (
+    challenge_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(150) NOT NULL,
+    description TEXT NOT NULL,
+    created_by INT,
+    FOREIGN KEY (created_by) REFERENCES User(user_id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS User_Challenge (
+    user_id INT,
+    challenge_id INT,
+    status VARCHAR(50) DEFAULT 'IN_PROGRESS', -- COMPLETED, IN_PROGRESS
+    joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, challenge_id),
+    FOREIGN KEY (user_id) REFERENCES User(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (challenge_id) REFERENCES Challenge(challenge_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Question (
+    question_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    content TEXT NOT NULL,
+    user_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES User(user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Answer (
+    answer_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    content TEXT NOT NULL,
+    user_id INT NOT NULL,
+    question_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES User(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (question_id) REFERENCES Question(question_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Notification (
+    notification_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    message TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES User(user_id) ON DELETE CASCADE
+);
