@@ -29,26 +29,25 @@
 <body>
     <div class="card">
         <h2>Create Account</h2>
-        <% if (request.getAttribute("error") != null) { %>
-            <div class="error"><%= request.getAttribute("error") %></div>
-        <% } %>
-        <form action="register" method="post">
+        <div id="errorMessage" class="error" style="display: none;"></div>
+        
+        <form id="registerForm">
             <div class="form-group">
                 <label>Full Name</label>
-                <input type="text" name="fullName" required>
+                <input type="text" id="fullName" name="fullName" required>
             </div>
             <div class="form-group">
                 <label>Email Address</label>
-                <input type="email" name="email" required>
+                <input type="email" id="email" name="email" required>
             </div>
             <div class="form-row">
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" name="password" required>
+                    <input type="password" id="password" name="password" required>
                 </div>
                 <div class="form-group">
                     <label>Role</label>
-                    <select name="role">
+                    <select id="role" name="role">
                         <option value="FAMILY_MEMBER">Family Member</option>
                         <option value="FAMILY_ADMIN">Parent/Guardian</option>
                     </select>
@@ -57,8 +56,30 @@
             <button type="submit">Sign Up</button>
         </form>
         <div class="footer">
-            Already have an account? <a href="login">Login here</a>
+            Already have an account? <a href="login.jsp">Login here</a>
         </div>
     </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errorDiv = document.getElementById('errorMessage');
+            const fullName = document.getElementById('fullName').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value;
+
+            try {
+                const response = await api.post('/auth/register', { fullName, email, password, role }, false);
+                api.setToken(response.token);
+                localStorage.setItem('user', JSON.stringify(response.user));
+                window.location.href = 'dashboard.jsp';
+            } catch (error) {
+                errorDiv.textContent = error.message;
+                errorDiv.style.display = 'block';
+            }
+        });
+    </script>
 </body>
 </html>

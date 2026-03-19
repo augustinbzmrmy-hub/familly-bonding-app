@@ -39,6 +39,11 @@ public class ChartboardController {
         return new ResponseEntity<>(chartboardService.getFamilyPosts(familyId), HttpStatus.OK);
     }
 
+    @GetMapping("/family/{familyId}/search")
+    public ResponseEntity<List<ChartboardPost>> searchPosts(@PathVariable Integer familyId, @RequestParam String keyword) {
+        return new ResponseEntity<>(chartboardService.searchPosts(familyId, keyword), HttpStatus.OK);
+    }
+
     @DeleteMapping("/{postId}")
     public ResponseEntity<?> deletePost(@PathVariable Integer postId, @RequestParam Integer userId) {
         try {

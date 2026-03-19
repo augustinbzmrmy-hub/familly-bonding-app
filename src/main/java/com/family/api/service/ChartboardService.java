@@ -41,6 +41,13 @@ public class ChartboardService {
         return postRepository.findByFamilyIdOrderByCreatedAtDesc(familyId);
     }
 
+    public List<ChartboardPost> searchPosts(Integer familyId, String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            return getFamilyPosts(familyId);
+        }
+        return postRepository.searchByFamilyIdAndKeyword(familyId, keyword);
+    }
+
     public void deletePost(Integer postId, Integer userId) {
         ChartboardPost post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));

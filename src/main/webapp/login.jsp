@@ -28,23 +28,42 @@
 <body>
     <div class="card">
         <h2>Welcome Back</h2>
-        <% if (request.getAttribute("error") != null) { %>
-            <div class="error"><%= request.getAttribute("error") %></div>
-        <% } %>
-        <form action="login" method="post">
+        <div id="errorMessage" class="error" style="display: none;"></div>
+        
+        <form id="loginForm">
             <div class="form-group">
                 <label>Email</label>
-                <input type="email" name="email" required>
+                <input type="email" id="email" name="email" required>
             </div>
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" name="password" required>
+                <input type="password" id="password" name="password" required>
             </div>
             <button type="submit">Login</button>
         </form>
         <div class="footer">
-            Don't have an account? <a href="register">Sign up</a>
+            Don't have an account? <a href="register.jsp">Sign up</a>
         </div>
     </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errorDiv = document.getElementById('errorMessage');
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await api.post('/auth/login', { email, password }, false);
+                api.setToken(response.token);
+                localStorage.setItem('user', JSON.stringify(response.user));
+                window.location.href = 'dashboard.jsp';
+            } catch (error) {
+                errorDiv.textContent = error.message;
+                errorDiv.style.display = 'block';
+            }
+        });
+    </script>
 </body>
 </html>

@@ -13,4 +13,9 @@ public interface ChartboardPostRepository extends JpaRepository<ChartboardPost, 
     
     @Query("SELECT p FROM ChartboardPost p WHERE p.user.family.familyId = :familyId ORDER BY p.createdAt DESC")
     List<ChartboardPost> findByFamilyIdOrderByCreatedAtDesc(@Param("familyId") Integer familyId);
+
+    @Query("SELECT p FROM ChartboardPost p WHERE p.user.family.familyId = :familyId AND LOWER(p.content) LIKE LOWER(CONCAT('%', :keyword, '%')) ORDER BY p.createdAt DESC")
+    List<ChartboardPost> searchByFamilyIdAndKeyword(@Param("familyId") Integer familyId, @Param("keyword") String keyword);
+
+    List<ChartboardPost> findByUser_UserIdOrderByCreatedAtDesc(Integer userId);
 }
