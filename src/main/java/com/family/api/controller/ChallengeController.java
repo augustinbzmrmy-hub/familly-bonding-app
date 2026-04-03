@@ -1,8 +1,11 @@
 package com.family.api.controller;
 
+import com.family.api.dto.ChallengeActionRequest;
+import com.family.api.dto.CreateChallengeRequest;
 import com.family.api.model.Challenge;
 import com.family.api.model.UserChallenge;
 import com.family.api.service.ChallengeService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,53 +23,65 @@ public class ChallengeController {
     private ChallengeService challengeService;
 
     @PostMapping
-    public ResponseEntity<?> createChallenge(@RequestBody Map<String, Object> request) {
-        try {
-            Integer createdBy = (Integer) request.get("createdByUserId"); // optional
-            String title = (String) request.get("title");
-            String description = (String) request.get("description");
-
-            if (title == null || description == null) {
-                return new ResponseEntity<>(Map.of("error", "title and description are required"), HttpStatus.BAD_REQUEST);
-            }
-
-            Challenge challenge = challengeService.createChallenge(createdBy, title, description);
-            return new ResponseEntity<>(challenge, HttpStatus.CREATED);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<Challenge> createChallenge(@Valid @RequestBody CreateChallengeRequest request) {
+        Challenge challenge = challengeService.createChallenge(
+                request.createdByUserId(),
+                request.title(),
+                request.description()
+        );
+        return new ResponseEntity<>(challenge, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<Map<String, Object>>> getChallenges(@RequestParam Integer userId) {
-        return new ResponseEntity<>(challengeService.getAllChallengesWithUserStatus(userId), HttpStatus.OK);
+    public ResponseEntity<List<Map<String, Object>>> getChallenges(
+            @RequestParam Integer userId,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) Integer createdByUserId
+    ) {
+        return new ResponseEntity<>(
+                challengeService.getAllChallengesWithUserStatus(userId, status, search, createdByUserId),
+                HttpStatus.OK
+        );
     }
 
     @PostMapping("/{challengeId}/join")
-    public ResponseEntity<?> joinChallenge(@PathVariable Integer challengeId, @RequestBody Map<String, Integer> request) {
-        try {
-            Integer userId = request.get("userId");
-            if (userId == null) {
-                return new ResponseEntity<>(Map.of("error", "userId is required"), HttpStatus.BAD_REQUEST);
-            }
-            UserChallenge result = challengeService.joinChallenge(userId, challengeId);
-            return new ResponseEntity<>(Map.of("message", "Successfully joined the challenge", "status", result.getStatus()), HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<Map<String, Object>> joinChallenge(
+            @PathVariable Integer challengeId,
+            @Valid @RequestBody ChallengeActionRequest request
+    ) {
+        UserChallenge result = challengeService.joinChallenge(request.userId(), challengeId);
+        return new ResponseEntity<>(
+                Map.<String, Object>of("message", "Successfully joined the challenge", "status", result.getStatus()),
+                HttpStatus.OK
+        );
     }
 
     @PostMapping("/{challengeId}/complete")
-    public ResponseEntity<?> completeChallenge(@PathVariable Integer challengeId, @RequestBody Map<String, Integer> request) {
-        try {
-            Integer userId = request.get("userId");
-            if (userId == null) {
-                return new ResponseEntity<>(Map.of("error", "userId is required"), HttpStatus.BAD_REQUEST);
-            }
-            UserChallenge result = challengeService.completeChallenge(userId, challengeId);
-            return new ResponseEntity<>(Map.of("message", "Challenge completed", "status", result.getStatus()), HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<Map<String, Object>> completeChallenge(
+            @PathVariable Integer challengeId,
+            @Valid @RequestBody ChallengeActionRequest request
+    ) {
+        UserChallenge result = challengeService.completeChallenge(request.userId(), challengeId);
+        return new ResponseEntity<>(Map.<String, Object>of("message", "Challenge completed", "status", result.getStatus()), HttpStatus.OK);
+    }
+
+    @PostMapping("/{challengeId}/abandon")
+    public ResponseEntity<Map<String, Object>> abandonChallenge(
+            @PathVariable Integer challengeId,
+            @Valid @RequestBody ChallengeActionRequest request
+    ) {
+        UserChallenge result = challengeService.abandonChallenge(request.userId(), challengeId);
+        return new ResponseEntity<>(Map.<String, Object>of("message", "Challenge abandoned", "status", result.getStatus()), HttpStatus.OK);
+    }
+
+    @GetMapping("/summary/{userId}")
+    public ResponseEntity<Map<String, Object>> getUserChallengeSummary(@PathVariable Integer userId) {
+        return new ResponseEntity<>(challengeService.getUserChallengeSummary(userId), HttpStatus.OK);
+    }
+
+    @GetMapping("/leaderboard/family/{familyId}")
+    public ResponseEntity<List<Map<String, Object>>> getFamilyLeaderboard(@PathVariable Integer familyId) {
+        return new ResponseEntity<>(challengeService.getFamilyLeaderboard(familyId), HttpStatus.OK);
     }
 }

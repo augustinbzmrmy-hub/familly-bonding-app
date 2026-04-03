@@ -2,6 +2,8 @@ package com.family.api.service;
 
 import com.family.api.model.User;
 import com.family.api.repository.UserRepository;
+import com.family.api.exception.BadRequestException;
+import com.family.api.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,19 +16,23 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+
     public User registerUser(User user) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already exists");
+            throw new BadRequestException("Email already exists");
         }
         if(user.getRole() == null || user.getRole().isEmpty()) {
             user.setRole("FAMILY_MEMBER");
         }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
-    public User loginUser(String email, String password) {
-        return userRepository.findByEmailAndPassword(email, password)
-                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     public List<User> getAllUsers() {
@@ -35,7 +41,7 @@ public class UserService {
 
     public User getUserById(Integer id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
     
     public User updateUser(Integer id, User userDetails) {

@@ -60,4 +60,17 @@ const api = {
     post: (endpoint, body, requireAuth = true) => api.request(endpoint, { method: 'POST', body, requireAuth }),
     put: (endpoint, body, requireAuth = true) => api.request(endpoint, { method: 'PUT', body, requireAuth }),
     delete: (endpoint, requireAuth = true) => api.request(endpoint, { method: 'DELETE', requireAuth }),
+
+    refreshSession: async () => {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user || !user.userId) return;
+        
+        try {
+            const freshUser = await api.get(`/users/${user.userId}`);
+            localStorage.setItem('user', JSON.stringify(freshUser));
+            return freshUser;
+        } catch (error) {
+            console.error("Failed to refresh session:", error);
+        }
+    }
 };

@@ -28,13 +28,14 @@ public class Comment {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "password", "family"})
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "post_id", nullable = false)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "comments", "user"})
+    @com.fasterxml.jackson.annotation.JsonBackReference
+    @lombok.ToString.Exclude
     private ChartboardPost post;
 }

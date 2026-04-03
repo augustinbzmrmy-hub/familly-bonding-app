@@ -25,5 +25,6 @@ public class Family {
     private String familyName;
 
     @OneToMany(mappedBy = "family", fetch = FetchType.EAGER)
+    @lombok.ToString.Exclude
     private List<User> members;
 }

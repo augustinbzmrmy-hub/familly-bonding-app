@@ -29,12 +29,13 @@ public class ChartboardPost {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "password", "family"})
     private User user;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"post"})
+    @com.fasterxml.jackson.annotation.JsonManagedReference
+    @lombok.ToString.Exclude
     private List<Comment> comments;
 }

@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface UserChallengeRepository extends JpaRepository<UserChallenge, Object> {
     Optional<UserChallenge> findByUser_UserIdAndChallenge_ChallengeId(Integer userId, Integer challengeId);
     List<UserChallenge> findByUser_UserId(Integer userId);
+    List<UserChallenge> findByUser_Family_FamilyId(Integer familyId);
 }

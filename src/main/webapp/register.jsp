@@ -5,58 +5,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - Family Bonding</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
     <style>
-        :root {
-            --primary: #6366f1;
-            --bg: #0f172a;
-            --card-bg: #1e293b;
-            --text-main: #f8fafc;
-        }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .card { background: var(--card-bg); padding: 2.5rem; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.3); width: 100%; max-width: 450px; }
-        h2 { margin-bottom: 1.5rem; text-align: center; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        .form-group { margin-bottom: 1.2rem; }
-        label { display: block; margin-bottom: 0.5rem; color: #94a3b8; }
-        input, select { width: 100%; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
-        button { width: 100%; padding: 0.75rem; border: none; border-radius: 0.5rem; background: var(--primary); color: white; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 1rem; }
-        button:hover { background: #4f46e5; }
-        .error { color: #ef4444; background: rgba(239, 68, 68, 0.1); padding: 0.75rem; border-radius: 0.5rem; margin-bottom: 1rem; font-size: 0.85rem; text-align: center; }
-        .footer { text-align: center; margin-top: 1.5rem; color: #94a3b8; font-size: 0.9rem; }
-        .footer a { color: var(--primary); text-decoration: none; }
+        body { display: flex; align-items: center; justify-content: center; }
+        .card-wrapper { width: 100%; max-width: 500px; padding: 2rem; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 0; }
+        .error { color: var(--error); background: rgba(239, 68, 68, 0.1); padding: 0.8rem; border-radius: 0.5rem; margin-bottom: 1.5rem; font-size: 0.9rem; text-align: center; border: 1px solid rgba(239, 68, 68, 0.2); }
+        .footer { text-align: center; margin-top: 2rem; color: var(--text-secondary); font-size: 0.9rem; }
+        .footer a { color: var(--primary); text-decoration: none; font-weight: 500; transition: color 0.3s; }
+        .footer a:hover { color: var(--primary-hover); }
+        .header-title { margin-bottom: 2rem; text-align: center; font-size: 2rem; font-weight: 700; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h2>Create Account</h2>
-        <div id="errorMessage" class="error" style="display: none;"></div>
-        
-        <form id="registerForm">
-            <div class="form-group">
-                <label>Full Name</label>
-                <input type="text" id="fullName" name="fullName" required>
-            </div>
-            <div class="form-group">
-                <label>Email Address</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" id="password" name="password" required>
+    <div class="card-wrapper animate-fade-in">
+        <div class="glass-card" style="padding: 2.5rem;">
+            <h2 class="header-title text-gradient">Create Account</h2>
+            <div id="errorMessage" class="error" style="display: none;"></div>
+            
+            <form id="registerForm">
+                <div class="form-group delay-100 animate-fade-in">
+                    <label>Full Name</label>
+                    <input type="text" id="fullName" name="fullName" class="form-control" required placeholder="John Doe">
                 </div>
-                <div class="form-group">
-                    <label>Role</label>
-                    <select id="role" name="role">
-                        <option value="FAMILY_MEMBER">Family Member</option>
-                        <option value="FAMILY_ADMIN">Parent/Guardian</option>
-                    </select>
+                <div class="form-group delay-100 animate-fade-in">
+                    <label>Email Address</label>
+                    <input type="email" id="email" name="email" class="form-control" required placeholder="you@example.com">
                 </div>
+                <div class="form-row delay-200 animate-fade-in">
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="password" name="password" class="form-control" required placeholder="••••••••">
+                    </div>
+                    <div class="form-group">
+                        <label>Role</label>
+                        <select id="role" name="role" class="form-control" style="appearance: none; background-color: var(--surface);">
+                            <option value="FAMILY_MEMBER">Family Member</option>
+                            <option value="FAMILY_ADMIN">Parent/Guardian</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary delay-300 animate-fade-in" style="margin-top: 1.5rem;">Create Account</button>
+            </form>
+            <div class="footer delay-300 animate-fade-in">
+                Already have an account? <a href="login.jsp">Login here</a>
             </div>
-            <button type="submit">Sign Up</button>
-        </form>
-        <div class="footer">
-            Already have an account? <a href="login.jsp">Login here</a>
         </div>
     </div>
 
@@ -64,7 +58,13 @@
     <script>
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const originalText = btn.textContent;
+            btn.textContent = 'Creating...';
+            btn.disabled = true;
+
             const errorDiv = document.getElementById('errorMessage');
+            errorDiv.style.display = 'none';
             const fullName = document.getElementById('fullName').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
@@ -76,8 +76,10 @@
                 localStorage.setItem('user', JSON.stringify(response.user));
                 window.location.href = 'dashboard.jsp';
             } catch (error) {
-                errorDiv.textContent = error.message;
+                errorDiv.textContent = error.message || 'Registration failed';
                 errorDiv.style.display = 'block';
+                btn.textContent = originalText;
+                btn.disabled = false;
             }
         });
     </script>

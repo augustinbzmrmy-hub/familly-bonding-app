@@ -29,9 +29,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // Temporarily using NoOp encoding for compatibility with existing raw passwords in the database
-        // In a production app, we would use BCryptPasswordEncoder and migrate the existing passwords.
-        return NoOpPasswordEncoder.getInstance(); 
+        return new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder(); 
     }
 
     @Bean
@@ -46,20 +44,12 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(
-                                new AntPathRequestMatcher("/api/auth/**"), 
-                                new AntPathRequestMatcher("/api/users/login"), 
+                                new AntPathRequestMatcher("/api/auth/**"),
+                                new AntPathRequestMatcher("/api/users/login"),
                                 new AntPathRequestMatcher("/api/users/register")).permitAll()
                         .requestMatchers(
-                                new AntPathRequestMatcher("/*.jsp"), 
-                                new AntPathRequestMatcher("/css/**"), 
-                                new AntPathRequestMatcher("/js/**"), 
-                                new AntPathRequestMatcher("/images/**"), 
-                                new AntPathRequestMatcher("/")).permitAll()
-                        .requestMatchers(
-                                new AntPathRequestMatcher("/v3/api-docs/**"), 
-                                new AntPathRequestMatcher("/swagger-ui/**"), 
-                                new AntPathRequestMatcher("/swagger-ui.html")).permitAll()
-                        .anyRequest().authenticated()
+                                new AntPathRequestMatcher("/api/**")).authenticated()
+                        .anyRequest().permitAll()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

@@ -1,57 +1,55 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Family Management - Family Bonding</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
     <style>
-        :root {
-            --primary: #6366f1;
-            --bg: #0f172a;
-            --card-bg: #1e293b;
-            --text-main: #f8fafc;
-        }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); margin: 0; padding: 2rem; }
-        .container { max-width: 800px; margin: 0 auto; display: none; }
-        .card { background: var(--card-bg); padding: 2rem; border-radius: 1rem; margin-bottom: 2rem; border: 1px solid rgba(255,255,255,0.05); }
-        h2 { color: var(--primary); margin-top: 0; }
-        .form-group { margin-bottom: 1rem; }
-        label { display: block; margin-bottom: 0.5rem; color: #94a3b8; }
-        input, select { width: 100%; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
-        button { padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; background: var(--primary); color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #4f46e5; }
-        .family-list { list-style: none; padding: 0; }
-        .family-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 0.5rem; margin-bottom: 0.5rem; }
-        .back-link { color: #94a3b8; text-decoration: none; display: block; margin-bottom: 1rem; }
-        .error { color: #ef4444; background: rgba(239, 68, 68, 0.1); padding: 0.75rem; border-radius: 0.5rem; margin-bottom: 1rem; font-size: 0.9rem; display: none; }
-        .loading { text-align: center; margin-top: 2rem; color: #94a3b8; }
+        .container { width: 100%; max-width: 800px; margin: 0 auto; display: none; }
+        .error { color: var(--error); background: rgba(239, 68, 68, 0.1); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem; display: none; border: 1px solid rgba(239, 68, 68, 0.2); }
+        .loading { text-align: center; margin-top: 5rem; color: var(--text-secondary); font-size: 1.2rem; }
     </style>
 </head>
 <body>
-    <div id="loader" class="loading">Loading family manager...</div>
-    <div class="container" id="app">
-        <a href="dashboard.jsp" class="back-link">← Back to Dashboard</a>
-        
-        <div id="errorMessage" class="error"></div>
+    <div id="loader" class="loading animate-float">Loading family manager...</div>
+    
+    <div class="app-container">
+        <jsp:include page="/WEB-INF/fragments/sidebar.jsp" />
 
-        <div class="card">
-            <h2>Create a Family Group</h2>
-            <form id="createFamilyForm">
-                <div class="form-group">
-                    <label>Family Name</label>
-                    <input type="text" id="familyName" placeholder="e.g. The Smith Family" required>
+        <div class="main-content">
+            <div class="container animate-fade-in" id="app">
+                <div class="header animate-fade-in">
+                    <div>
+                        <h1 style="margin:0; font-size: 2.2rem; font-weight: 700;">Family Management</h1>
+                        <p style="color: var(--text-secondary); margin: 0.5rem 0 0; font-size: 1.1rem;">Manage your family group or join a new one.</p>
+                    </div>
                 </div>
-                <button type="submit">Create Family</button>
-            </form>
-        </div>
-
-        <div class="card">
-            <h2>Join an Existing Family</h2>
-            <div class="form-group">
-                <label>Family ID</label>
-                <input type="text" id="familyId" placeholder="Enter Family ID from your family admin">
+                
+                <div id="errorMessage" class="error"></div>
+        
+                <div class="glass-card delay-200 animate-fade-in" style="padding: 2.5rem; margin-bottom: 2rem;">
+                    <h2 class="text-gradient" style="margin-bottom: 1.5rem;">Create a Family Group</h2>
+                    <form id="createFamilyForm">
+                        <div class="form-group">
+                            <label>Family Name</label>
+                            <input type="text" id="familyName" class="form-control" placeholder="e.g. The Smith Family" required>
+                        </div>
+                        <button type="submit" class="btn-primary" style="width: auto; padding: 0.75rem 2rem;">Create Family</button>
+                    </form>
+                </div>
+        
+                <div class="glass-card delay-300 animate-fade-in" style="padding: 2.5rem;">
+                    <h2 class="text-gradient" style="margin-bottom: 1.5rem;">Join an Existing Family</h2>
+                    <div class="form-group">
+                        <label>Family ID</label>
+                        <input type="text" id="familyId" class="form-control" placeholder="Enter Family ID from your family admin">
+                    </div>
+                    <button id="joinCodeBtn" type="button" class="btn-primary" style="width: auto; padding: 0.75rem 2rem; background: linear-gradient(135deg, #10b981, #059669);">Join Family</button>
+                </div>
             </div>
-            <button id="joinCodeBtn" type="button">Join Family</button>
         </div>
     </div>
 
@@ -67,12 +65,21 @@
             const errorDiv = document.getElementById('errorMessage');
 
             if (cachedUser.family) {
+                const fName = cachedUser.family.familyName || cachedUser.family.name || "Your Family";
                 document.getElementById('app').innerHTML = `
-                    <a href="dashboard.jsp" class="back-link">← Back to Dashboard</a>
-                    <div class="card" style="text-align:center;">
-                        <h2>You are already in a Family Group!</h2>
-                        <p>You belong to <strong>${cachedUser.family.name}</strong>.</p>
-                        <p>Share this Family ID with members you want to join: <strong>${cachedUser.family.familyId}</strong></p>
+                    <div class="header animate-fade-in">
+                        <div>
+                            <h1 style="margin:0; font-size: 2.2rem; font-weight: 700;">Family Management</h1>
+                            <p style="color: var(--text-secondary); margin: 0.5rem 0 0; font-size: 1.1rem;">You are part of \${fName}.</p>
+                        </div>
+                    </div>
+                    <div class="glass-card animate-fade-in" style="text-align:center; padding: 4rem 2rem;">
+                        <h2 class="text-gradient" style="font-size: 2rem; margin-bottom: 1rem;">You're in a Family!</h2>
+                        <p style="font-size: 1.2rem; margin-bottom: 2rem;">You belong to <strong style="color:white;">\${fName}</strong>.</p>
+                        <div style="background: rgba(0,0,0,0.3); border: 1px dashed var(--primary); padding: 1.5rem; border-radius: 0.75rem; display: inline-block;">
+                            <p style="color: var(--text-secondary); margin-bottom: 0.5rem; font-size: 0.9rem;">Share this Family ID for others to join:</p>
+                            <span style="font-size: 1.5rem; font-weight: bold; color: var(--primary); letter-spacing: 2px;">\${cachedUser.family.familyId}</span>
+                        </div>
                     </div>
                 `;
             }
@@ -89,27 +96,27 @@
                 e.preventDefault();
                 const name = document.getElementById('familyName').value;
                 try {
-                    const response = await api.post('/families/create', { familyName: name, userId: cachedUser.userId });
-                    cachedUser.family = response;
-                    localStorage.setItem('user', JSON.stringify(cachedUser));
+                    await api.post('/families/create', { familyName: name, userId: cachedUser.userId });
+                    await api.refreshSession();
+                    window.location.href = 'dashboard.jsp';
+                } catch (error) {
+                    showError(error.message);
+                }
+            });
+    
+            document.getElementById('joinCodeBtn')?.addEventListener('click', async () => {
+                const fId = document.getElementById('familyId').value;
+                if (!fId) return showError("Family ID is required");
+                try {
+                    await api.post(`/families/\${fId}/join`, { userId: cachedUser.userId });
+                    await api.refreshSession();
                     window.location.href = 'dashboard.jsp';
                 } catch (error) {
                     showError(error.message);
                 }
             });
 
-            document.getElementById('joinCodeBtn')?.addEventListener('click', async () => {
-                const fId = document.getElementById('familyId').value;
-                if (!fId) return showError("Family ID is required");
-                try {
-                    const response = await api.post(`/families/${fId}/join`, { userId: cachedUser.userId });
-                    cachedUser.family = response;
-                    localStorage.setItem('user', JSON.stringify(cachedUser));
-                    window.location.href = 'dashboard.jsp';
-                } catch (error) {
-                    showError(error.message);
-                }
-            });
+            // Logout is now handled in the sidebar fragment
         });
     </script>
 </body>

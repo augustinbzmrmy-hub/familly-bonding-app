@@ -40,7 +40,7 @@ public class AuthController {
             );
 
             // Fetch full user details locally
-            User loggedInUser = userService.loginUser(email, password); 
+            User loggedInUser = userService.getUserByEmail(email); 
             String token = jwtUtil.generateToken(email);
 
             Map<String, Object> response = new HashMap<>();
