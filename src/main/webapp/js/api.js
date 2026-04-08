@@ -7,6 +7,28 @@ const api = {
     
     removeToken: () => localStorage.removeItem('jwt_token'),
 
+    showToast: (message, type = 'info') => {
+        let container = document.getElementById('toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'toast-container';
+            document.body.appendChild(container);
+        }
+
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        
+        const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+        toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+        
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add('out');
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    },
+
     getHeaders: (auth = true) => {
         const headers = {
             'Content-Type': 'application/json'
@@ -22,7 +44,7 @@ const api = {
 
     request: async (endpoint, options = {}) => {
         const url = `${API_BASE_URL}${endpoint}`;
-        const requireAuth = options.requireAuth !== false; // Default to true
+        const requireAuth = options.requireAuth !== false;
 
         const fetchOptions = {
             method: options.method || 'GET',
@@ -37,7 +59,6 @@ const api = {
             const response = await fetch(url, fetchOptions);
             
             if ((response.status === 401 || response.status === 403) && !endpoint.includes('/auth/')) {
-                // Unauthorized or Forbidden - Clear token and redirect to login
                 api.removeToken();
                 window.location.href = 'login.jsp';
                 throw new Error("Session expired. Please log in again.");
@@ -46,12 +67,17 @@ const api = {
             const data = await response.json().catch(() => ({}));
 
             if (!response.ok) {
-                throw new Error(data.error || 'API request failed');
+                const errMsg = data.message || data.error || 'API request failed';
+                api.showToast(errMsg, 'error');
+                throw new Error(errMsg);
             }
 
             return data;
         } catch (error) {
             console.error('API Error:', error);
+            if (!error.message.includes("Session expired")) {
+                api.showToast(error.message, 'error');
+            }
             throw error;
         }
     },

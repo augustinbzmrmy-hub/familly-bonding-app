@@ -126,10 +126,11 @@
 
             try {
                 await api.post(`/education/questions/\${questionId}/answers`, { userId: currentUser.userId, content });
+                api.showToast("Answer posted!", "success");
                 input.value = '';
                 loadQuestions();
             } catch (error) {
-                alert("Failed to post answer: " + error.message);
+                console.error("Failed to post answer", error);
             }
         };
 
@@ -139,10 +140,11 @@
 
             try {
                 await api.post('/education/questions', { userId: currentUser.userId, content });
+                api.showToast("Question posted to forum!", "success");
                 document.getElementById('questionContent').value = '';
                 loadQuestions();
             } catch (error) {
-                alert("Failed to post question: " + error.message);
+                console.error("Failed to post question", error);
             }
         });
 

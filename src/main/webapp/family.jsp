@@ -97,6 +97,7 @@
                 const name = document.getElementById('familyName').value;
                 try {
                     await api.post('/families/create', { familyName: name, userId: cachedUser.userId });
+                    api.showToast("Family created successfully!", "success");
                     await api.refreshSession();
                     window.location.href = 'dashboard.jsp';
                 } catch (error) {
@@ -109,6 +110,7 @@
                 if (!fId) return showError("Family ID is required");
                 try {
                     await api.post(`/families/\${fId}/join`, { userId: cachedUser.userId });
+                    api.showToast("Joined family successfullly!", "success");
                     await api.refreshSession();
                     window.location.href = 'dashboard.jsp';
                 } catch (error) {

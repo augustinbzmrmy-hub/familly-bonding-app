@@ -113,10 +113,11 @@
                 const contentInput = document.getElementById('postContent');
                 try {
                     await api.post('/posts', { userId: cachedUser.userId, content: contentInput.value });
+                    api.showToast("Post shared with family!", "success");
                     contentInput.value = '';
                     loadPosts();
                 } catch (error) {
-                    alert("Error creating post: " + error.message);
+                    console.error("Error creating post", error);
                 }
             });
 
@@ -131,9 +132,10 @@
                 if (!confirm("Delete this post?")) return;
                 try {
                     await api.delete(`/posts/\${postId}?userId=\${cachedUser.userId}`);
+                    api.showToast("Post deleted", "info");
                     loadPosts();
                 } catch (error) {
-                    alert("Error deleting post: " + error.message);
+                    console.error("Error deleting post", error);
                 }
             };
 

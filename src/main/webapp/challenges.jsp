@@ -103,9 +103,11 @@
             window.actionChallenge = async (challengeId, action) => {
                 try {
                     await api.post(`/challenges/\${challengeId}/\${action}`, { userId: cachedUser.userId });
+                    api.showToast(`Challenge \${action === 'join' ? 'joined' : 'completed'} successfully!`, 'success');
                     loadChallenges(); 
                 } catch (error) {
-                    alert("Error updating challenge: " + error.message);
+                    // api.request already shows a toast for errors
+                    console.error("Error updating challenge", error);
                 }
             };
 

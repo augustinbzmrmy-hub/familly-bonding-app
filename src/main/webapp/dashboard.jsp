@@ -79,6 +79,12 @@
 
                 document.getElementById('loader').style.display = 'none';
                 document.getElementById('app').style.display = 'flex';
+                
+                // Show a welcome toast only once per session
+                if (!sessionStorage.getItem('welcomed')) {
+                    api.showToast(`Welcome back, \${user.fullName}!`, 'info');
+                    sessionStorage.setItem('welcomed', 'true');
+                }
 
             } catch (error) {
                 console.error("Dashboard error:", error);
