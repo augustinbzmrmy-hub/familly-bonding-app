@@ -19,15 +19,24 @@ public class ChartboardController {
     @Autowired
     private ChartboardService chartboardService;
 
-    @PostMapping
-    public ResponseEntity<?> createPost(@RequestBody Map<String, Object> request) {
+    @Autowired
+    private com.family.api.service.FileStorageService fileStorageService;
+
+    @Autowired
+    private com.family.api.service.UserService userService;
+
+    @PostMapping(consumes = {"multipart/form-data"})
+    public ResponseEntity<?> createPost(
+            @RequestParam("content") String content,
+            @RequestParam(value = "image", required = false) org.springframework.web.multipart.MultipartFile image,
+            @org.springframework.security.core.annotation.AuthenticationPrincipal org.springframework.security.core.userdetails.UserDetails userDetails) {
         try {
-            Integer userId = (Integer) request.get("userId");
-            String content = (String) request.get("content");
-            if (userId == null || content == null) {
-                return new ResponseEntity<>(Map.of("error", "userId and content are required"), HttpStatus.BAD_REQUEST);
+            com.family.api.model.User user = userService.getUserByEmail(userDetails.getUsername());
+            String imageUrl = null;
+            if (image != null && !image.isEmpty()) {
+                imageUrl = fileStorageService.storeFile(image);
             }
-            ChartboardPost post = chartboardService.createPost(userId, content);
+            ChartboardPost post = chartboardService.createPost(user.getUserId(), content, imageUrl);
             return new ResponseEntity<>(post, HttpStatus.CREATED);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.BAD_REQUEST);

@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Integer> {
     List<Question> findAllByOrderByCreatedAtDesc();
+    List<Question> findByUserFamilyFamilyIdOrderByCreatedAtDesc(Integer familyId);
 }

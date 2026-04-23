@@ -22,6 +22,9 @@ import java.util.stream.Collectors;
 @Service
 public class ChallengeService {
 
+    @Autowired
+    private NotificationService notificationService;
+    
     private static final String STATUS_NOT_JOINED = "NOT_JOINED";
     private static final String STATUS_IN_PROGRESS = "IN_PROGRESS";
     private static final String STATUS_COMPLETED = "COMPLETED";
@@ -145,6 +148,19 @@ public class ChallengeService {
         }
 
         uc.setStatus(STATUS_COMPLETED);
+        
+        // Award points to the user
+        User user = uc.getUser();
+        Challenge challenge = uc.getChallenge();
+        user.setPoints(user.getPoints() + challenge.getPointsValue());
+        userRepository.save(user);
+        
+        notificationService.broadcastToFamily(
+            user.getFamily().getFamilyId(),
+            user.getFullName() + " has completed the '" + challenge.getTitle() + "' challenge! 🎉",
+            user.getUserId()
+        );
+        
         return userChallengeRepository.save(uc);
     }
 
@@ -199,7 +215,7 @@ public class ChallengeService {
                     memberSummary.put("fullName", user.getFullName());
                     memberSummary.put("completedChallenges", completed);
                     memberSummary.put("inProgressChallenges", inProgress);
-                    memberSummary.put("score", completed * 10 + inProgress * 2);
+                    memberSummary.put("score", user.getPoints());
                     return memberSummary;
                 })
                 .sorted(Comparator

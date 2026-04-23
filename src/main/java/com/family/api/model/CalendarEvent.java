@@ -4,30 +4,37 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Challenge")
+@Table(name = "Calendar_Event")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Challenge {
+public class CalendarEvent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "challenge_id")
-    private Integer challengeId;
+    @Column(name = "event_id")
+    private Integer eventId;
 
     @Column(nullable = false, length = 150)
     private String title;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "points_value", nullable = false)
-    private Integer pointsValue = 50;
+    @Column(name = "event_date", nullable = false)
+    private LocalDateTime eventDate;
+
+    @Column(length = 255)
+    private String location;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "family_id", nullable = false)
+    private Family family;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "created_by")
-    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "password", "family"})
     private User createdBy;
 }

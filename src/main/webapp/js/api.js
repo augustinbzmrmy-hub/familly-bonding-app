@@ -1,4 +1,9 @@
-const API_BASE_URL = '/familly-bonding-api/api';
+const getContextPath = () => {
+    const path = window.location.pathname;
+    return path.substring(0, path.indexOf('/', 1));
+};
+
+const API_BASE_URL = getContextPath() + '/api';
 
 const api = {
     getToken: () => localStorage.getItem('jwt_token'),
@@ -67,7 +72,7 @@ const api = {
             const data = await response.json().catch(() => ({}));
 
             if (!response.ok) {
-                const errMsg = data.message || data.error || 'API request failed';
+                const errMsg = data.message || data.error || `API Error ${response.status}: ${response.statusText}`;
                 api.showToast(errMsg, 'error');
                 throw new Error(errMsg);
             }
@@ -85,6 +90,7 @@ const api = {
     get: (endpoint, requireAuth = true) => api.request(endpoint, { method: 'GET', requireAuth }),
     post: (endpoint, body, requireAuth = true) => api.request(endpoint, { method: 'POST', body, requireAuth }),
     put: (endpoint, body, requireAuth = true) => api.request(endpoint, { method: 'PUT', body, requireAuth }),
+    patch: (endpoint, body, requireAuth = true) => api.request(endpoint, { method: 'PATCH', body, requireAuth }),
     delete: (endpoint, requireAuth = true) => api.request(endpoint, { method: 'DELETE', requireAuth }),
 
     refreshSession: async () => {

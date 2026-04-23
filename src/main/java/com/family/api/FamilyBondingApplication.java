@@ -6,6 +6,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 @SpringBootApplication
+@org.springframework.scheduling.annotation.EnableScheduling
 public class FamilyBondingApplication extends SpringBootServletInitializer {
 
     @Override

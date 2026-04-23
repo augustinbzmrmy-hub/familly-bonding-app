@@ -23,7 +23,10 @@ public class ChartboardService {
     @Autowired
     private UserRepository userRepository;
 
-    public ChartboardPost createPost(Integer userId, String content) {
+    @Autowired
+    private NotificationService notificationService;
+
+    public ChartboardPost createPost(Integer userId, String content, String imageUrl) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         
@@ -34,11 +37,20 @@ public class ChartboardService {
         ChartboardPost post = new ChartboardPost();
         post.setUser(user);
         post.setContent(content);
-        return postRepository.save(post);
+        post.setImageUrl(imageUrl);
+        ChartboardPost savedPost = postRepository.save(post);
+        
+        notificationService.broadcastToFamily(
+            user.getFamily().getFamilyId(),
+            user.getFullName() + " shared a new post on the Chartboard!",
+            user.getUserId()
+        );
+        
+        return savedPost;
     }
 
     public List<ChartboardPost> getFamilyPosts(Integer familyId) {
-        return postRepository.findByFamilyIdOrderByCreatedAtDesc(familyId);
+        return postRepository.findByFamilyIdOrderByCreatedAtAsc(familyId);
     }
 
     public List<ChartboardPost> searchPosts(Integer familyId, String keyword) {

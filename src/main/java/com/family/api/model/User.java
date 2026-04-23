@@ -35,6 +35,15 @@ public class User {
     @Column(length = 50)
     private String role = "FAMILY_MEMBER"; // SYSTEM_ADMIN, FAMILY_ADMIN, FAMILY_MEMBER
 
+    @Column(name = "points", nullable = false)
+    private Integer points = 0;
+
+    @Column(name = "profile_picture_url")
+    private String profilePictureUrl;
+
+    @Column(name = "phone_number", length = 20)
+    private String phoneNumber;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "family_id")
     @lombok.ToString.Exclude

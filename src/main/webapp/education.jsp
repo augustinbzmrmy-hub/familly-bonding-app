@@ -73,7 +73,8 @@
 
         async function loadQuestions() {
             try {
-                const questions = await api.get('/education/questions');
+                const familyId = currentUser.family ? currentUser.family.familyId : '';
+                const questions = await api.get(`/education/questions?familyId=\${familyId}`);
                 const list = document.getElementById('questionsList');
                 list.innerHTML = '';
 

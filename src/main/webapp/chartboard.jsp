@@ -7,6 +7,8 @@
     <title>Chartboard - Family Bonding</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/animations.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <style>
         .post-card { display: flex; flex-direction: column; padding: 1.5rem; margin-bottom: 1.5rem; transition: transform 0.3s ease; }
         .post-card:hover { transform: translateY(-3px); }
@@ -24,6 +26,32 @@
         .delete-btn { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 0.5rem; padding: 0.4rem 0.8rem; color: var(--error); cursor: pointer; font-size: 0.85rem; transition: 0.3s; font-weight: 600; }
         .delete-btn:hover { background: var(--error); color: white; }
         .loading { text-align: center; margin-top: 3rem; color: var(--text-secondary); font-size: 1.2rem; }
+        
+        /* Thumbnail and Preview Styles */
+        .post-image-thumbnail { 
+            max-width: 200px; 
+            max-height: 150px; 
+            border-radius: 8px; 
+            margin-top: 1rem; 
+            cursor: pointer; 
+            object-fit: cover; 
+            transition: transform 0.2s;
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+        .post-image-thumbnail:hover { transform: scale(1.05); border-color: var(--accent-primary); }
+
+        #imagePreviewModal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        #imagePreviewModal img { max-width: 90%; max-height: 90%; border-radius: 8px; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+        .close-modal { position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -38,19 +66,29 @@
             
             <input type="text" id="searchInput" class="form-control search-bar delay-200 animate-fade-in" placeholder="Search posts by keyword... (Press Enter)">
 
-            <div class="glass-card post-form delay-300 animate-fade-in">
-                <form id="createPostForm">
+            <div id="postsContainer" class="delay-300 animate-fade-in" style="margin-bottom: 2rem;"></div>
+
+            <div class="glass-card post-form delay-300 animate-fade-in" style="margin-top: auto; position: sticky; bottom: 1rem; z-index: 100;">
+                <form id="createPostForm" enctype="multipart/form-data">
                     <textarea id="postContent" rows="3" placeholder="Share something wonderful with your family..." required></textarea>
-                    <button type="submit" class="btn-primary" style="width: auto; padding: 0.75rem 2rem;">Post Message</button>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <input type="file" id="postImage" accept="image/*" style="font-size: 0.9rem; color: var(--text-secondary);">
+                        <button type="submit" class="btn-primary" style="width: auto; padding: 0.75rem 2rem;">Post Message</button>
+                    </div>
                 </form>
             </div>
-
-            <div id="postsContainer" class="delay-300 animate-fade-in"></div>
         </div>
     </div>
     <div id="loader" class="loading animate-float">Loading chartboard...</div>
 
+    <!-- Image Preview Modal -->
+    <div id="imagePreviewModal" onclick="closeImagePreview()">
+        <span class="close-modal">&times;</span>
+        <img id="modalImage" src="" alt="Full Preview">
+    </div>
+
     <script src="js/api.js"></script>
+    <script src="js/notifications.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             if (!api.getToken()) {
@@ -61,6 +99,13 @@
             const cachedUser = JSON.parse(localStorage.getItem('user'));
             const postsContainer = document.getElementById('postsContainer');
             
+            // Connect to real-time updates
+            notifications.connect(cachedUser, {
+                onFamilyMessage: (msg) => {
+                    if (msg.includes("Chartboard")) loadPosts();
+                }
+            });
+
             if (!cachedUser.family) {
                 document.getElementById('app').style.display = 'flex';
                 document.getElementById('loader').style.display = 'none';
@@ -86,6 +131,7 @@
                         let deleteHtml = isOwner ? `<button type="button" class="delete-btn" onclick="deletePost(\${p.postId})">Delete</button>` : '';
                         const ts = p.createdAt ? new Date(p.createdAt).toLocaleString() : 'Just now';
                         const uName = p.user && p.user.fullName ? p.user.fullName : 'Unknown';
+                        const imgHtml = p.imageUrl ? `<img src="\${p.imageUrl}" class="post-image-thumbnail" onclick="previewImage('\${p.imageUrl}')">` : '';
 
                         postsContainer.innerHTML += `
                             <div class="glass-card post-card animate-fade-in" style="animation-duration: 0.5s;">
@@ -99,10 +145,16 @@
                                     </div>
                                     \${deleteHtml}
                                 </div>
-                                <div class="post-content">\${p.content}</div>
+                                <div class="post-content">
+                                    \${p.content}
+                                    \${imgHtml}
+                                </div>
                             </div>
                         `;
                     });
+                    
+                    // Auto-scroll to latest message at the bottom
+                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
                 } catch (error) {
                     console.error("Failed to load posts", error);
                 }
@@ -111,13 +163,32 @@
             document.getElementById('createPostForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const contentInput = document.getElementById('postContent');
+                const imageInput = document.getElementById('postImage');
+                
+                const formData = new FormData();
+                formData.append('content', contentInput.value);
+                if (imageInput.files[0]) {
+                    formData.append('image', imageInput.files[0]);
+                }
+
                 try {
-                    await api.post('/posts', { userId: cachedUser.userId, content: contentInput.value });
+                    // Use standard fetch for multipart
+                    const response = await fetch('/family-bonding-api/api/posts', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer \${api.getToken()}`
+                        },
+                        body: formData
+                    });
+
+                    if (!response.ok) throw new Error("Upload failed");
+
                     api.showToast("Post shared with family!", "success");
                     contentInput.value = '';
+                    imageInput.value = '';
                     loadPosts();
                 } catch (error) {
-                    console.error("Error creating post", error);
+                    api.showToast("Error creating post", "error");
                 }
             });
 
@@ -137,6 +208,17 @@
                 } catch (error) {
                     console.error("Error deleting post", error);
                 }
+            };
+
+            window.previewImage = (url) => {
+                const modal = document.getElementById('imagePreviewModal');
+                const modalImg = document.getElementById('modalImage');
+                modalImg.src = url;
+                modal.style.display = 'flex';
+            };
+
+            window.closeImagePreview = () => {
+                document.getElementById('imagePreviewModal').style.display = 'none';
             };
 
             await loadPosts();

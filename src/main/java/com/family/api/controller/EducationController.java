@@ -35,7 +35,10 @@ public class EducationController {
     }
 
     @GetMapping("/questions")
-    public ResponseEntity<List<Question>> getAllQuestions() {
+    public ResponseEntity<List<Question>> getAllQuestions(@RequestParam(required = false) Integer familyId) {
+        if (familyId != null) {
+            return new ResponseEntity<>(educationService.getFamilyQuestions(familyId), HttpStatus.OK);
+        }
         return new ResponseEntity<>(educationService.getAllQuestions(), HttpStatus.OK);
     }
 

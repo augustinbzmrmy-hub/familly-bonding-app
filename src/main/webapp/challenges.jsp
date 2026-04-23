@@ -84,6 +84,7 @@
                                     <span class="status-badge status-\${statusClass}">\${statusText}</span>
                                     <div class="challenge-title">\${c.title}</div>
                                     <div class="challenge-desc">\${c.description}</div>
+                                    <div style="font-size: 0.85rem; color: var(--accent-primary); margin-bottom: 1rem; font-weight: 600;">💰 Worth \${c.pointsValue || 50} Points</div>
                                 </div>
                                 <div style="margin-top: 1rem;">
                                     \${buttonHtml}

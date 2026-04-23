@@ -50,4 +50,8 @@ public class UserService {
         user.setRole(userDetails.getRole());
         return userRepository.save(user);
     }
+
+    public List<User> getLeaderboard(Integer familyId) {
+        return userRepository.findByFamily_FamilyIdOrderByPointsDesc(familyId);
+    }
 }

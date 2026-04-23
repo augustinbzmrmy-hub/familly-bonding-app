@@ -37,6 +37,10 @@ public class EducationService {
         return questionRepository.findAllByOrderByCreatedAtDesc();
     }
 
+    public List<Question> getFamilyQuestions(Integer familyId) {
+        return questionRepository.findByUserFamilyFamilyIdOrderByCreatedAtDesc(familyId);
+    }
+
     public Answer answerQuestion(Integer questionId, Integer userId, String content) {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new RuntimeException("Question not found"));

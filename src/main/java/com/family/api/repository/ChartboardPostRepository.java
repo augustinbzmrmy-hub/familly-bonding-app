@@ -11,11 +11,11 @@ import java.util.List;
 @Repository
 public interface ChartboardPostRepository extends JpaRepository<ChartboardPost, Integer> {
     
-    @Query("SELECT p FROM ChartboardPost p WHERE p.user.family.familyId = :familyId ORDER BY p.createdAt DESC")
-    List<ChartboardPost> findByFamilyIdOrderByCreatedAtDesc(@Param("familyId") Integer familyId);
+    @Query("SELECT p FROM ChartboardPost p WHERE p.user.family.familyId = :familyId ORDER BY p.createdAt ASC")
+    List<ChartboardPost> findByFamilyIdOrderByCreatedAtAsc(@Param("familyId") Integer familyId);
 
-    @Query("SELECT p FROM ChartboardPost p WHERE p.user.family.familyId = :familyId AND LOWER(p.content) LIKE LOWER(CONCAT('%', :keyword, '%')) ORDER BY p.createdAt DESC")
+    @Query("SELECT p FROM ChartboardPost p WHERE p.user.family.familyId = :familyId AND LOWER(p.content) LIKE LOWER(CONCAT('%', :keyword, '%')) ORDER BY p.createdAt ASC")
     List<ChartboardPost> searchByFamilyIdAndKeyword(@Param("familyId") Integer familyId, @Param("keyword") String keyword);
 
-    List<ChartboardPost> findByUser_UserIdOrderByCreatedAtDesc(Integer userId);
+    List<ChartboardPost> findByUser_UserIdOrderByCreatedAtAsc(Integer userId);
 }
