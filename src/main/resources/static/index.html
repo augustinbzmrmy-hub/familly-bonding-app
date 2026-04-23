@@ -282,8 +282,8 @@
             const body = document.getElementById('userTableBody');
             body.innerHTML = '';
 
-            if (data.length === 0) {
-                body.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-sub); padding: 40px;">No members registered yet.</td></tr>';
+            if (!Array.isArray(data)) {
+                body.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-sub); padding: 40px;">Unauthorized or error loading data. Please log in first.</td></tr>';
                 return;
             }
 
