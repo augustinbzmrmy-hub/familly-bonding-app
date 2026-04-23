@@ -123,7 +123,7 @@
                 }
 
                 try {
-                    const response = await fetch('/family-bonding-api/api/users/profile', {
+                    const response = await fetch('/api/users/profile', {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer \${api.getToken()}`

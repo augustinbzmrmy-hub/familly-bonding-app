@@ -173,7 +173,7 @@
 
                 try {
                     // Use standard fetch for multipart
-                    const response = await fetch('/family-bonding-api/api/posts', {
+                    const response = await fetch('/api/posts', {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer \${api.getToken()}`
