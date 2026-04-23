@@ -12,8 +12,16 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private final String SECRET_KEY = "my_super_secret_key_which_must_be_long_enough_for_hmac_sha256_algorithm_for_this_project";
-    private final Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+    @org.springframework.beans.factory.annotation.Value("${JWT_SECRET:my_super_secret_key_which_must_be_long_enough_for_hmac_sha256_algorithm_for_this_project}")
+    private String secretKeyString;
+
+    private Key key;
+
+    @jakarta.annotation.PostConstruct
+    public void init() {
+        this.key = Keys.hmacShaKeyFor(secretKeyString.getBytes());
+    }
+
     private final long JWT_EXPIRATION_MS = 86400000; // 24 hours
 
     public String generateToken(String email) {

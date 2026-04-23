@@ -1,16 +1,40 @@
 package com.family.api.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 @Entity
 @Table(name = "Shopping_Item")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class ShoppingItem {
+
+    public ShoppingItem() {}
+
+    public ShoppingItem(Integer itemId, String name, String quantity, boolean isBought, User addedBy, Family family) {
+        this.itemId = itemId;
+        this.name = name;
+        this.quantity = quantity;
+        this.isBought = isBought;
+        this.addedBy = addedBy;
+        this.family = family;
+    }
+
+    // Getters and Setters
+    public Integer getItemId() { return itemId; }
+    public void setItemId(Integer itemId) { this.itemId = itemId; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getQuantity() { return quantity; }
+    public void setQuantity(String quantity) { this.quantity = quantity; }
+
+    public boolean isBought() { return isBought; }
+    public void setBought(boolean bought) { isBought = bought; }
+
+    public User getAddedBy() { return addedBy; }
+    public void setAddedBy(User addedBy) { this.addedBy = addedBy; }
+
+    public Family getFamily() { return family; }
+    public void setFamily(Family family) { this.family = family; }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,9 +1,6 @@
 package com.family.api.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -11,10 +8,33 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Answer")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Answer {
+
+    public Answer() {}
+
+    public Answer(Integer answerId, String content, LocalDateTime createdAt, User user, Question question) {
+        this.answerId = answerId;
+        this.content = content;
+        this.createdAt = createdAt;
+        this.user = user;
+        this.question = question;
+    }
+
+    // Getters and Setters
+    public Integer getAnswerId() { return answerId; }
+    public void setAnswerId(Integer answerId) { this.answerId = answerId; }
+
+    public String getContent() { return content; }
+    public void setContent(String content) { this.content = content; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+
+    public Question getQuestion() { return question; }
+    public void setQuestion(Question question) { this.question = question; }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,6 +56,5 @@ public class Answer {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "question_id", nullable = false)
     @com.fasterxml.jackson.annotation.JsonBackReference
-    @lombok.ToString.Exclude
     private Question question;
 }
