@@ -2,7 +2,7 @@ let stompClient = null;
 
 const notifications = {
     connect: (user, onMessageReceived) => {
-        const socket = new SockJS('/family-bonding-api/ws-family');
+        const socket = new SockJS('/ws-family');
         stompClient = Stomp.over(socket);
         // Disable logging in console
         stompClient.debug = null;

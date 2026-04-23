@@ -1,9 +1,4 @@
-const getContextPath = () => {
-    const path = window.location.pathname;
-    return path.substring(0, path.indexOf('/', 1));
-};
-
-const API_BASE_URL = getContextPath() + '/api';
+const API_BASE_URL = '/api';
 
 const api = {
     getToken: () => localStorage.getItem('jwt_token'),
