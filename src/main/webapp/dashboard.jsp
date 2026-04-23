@@ -92,7 +92,7 @@
                 } else {
                     const familyName = user.family.familyName || user.family.name || 'Your Family';
                     familyStatusBox.innerHTML = `
-                        <p style="font-size: 1.1rem; margin-bottom: 1rem;">Connected to <strong style="color: white;">\${familyName}</strong></p>
+                        <p style="font-size: 1.1rem; margin-bottom: 1rem;">Connected to <strong style="color: var(--text-primary);">\${familyName}</strong></p>
                         <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: var(--success);">Active Member</span>
                     `;
                 }

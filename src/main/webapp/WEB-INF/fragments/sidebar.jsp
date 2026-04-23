@@ -5,11 +5,11 @@
         Family Bond
     </div>
     
-    <div id="sidebarUser" class="delay-150 animate-fade-in" style="padding: 1.5rem; display: flex; align-items: center; gap: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 1rem;">
+    <div id="sidebarUser" class="delay-150 animate-fade-in" style="padding: 1.5rem; display: flex; align-items: center; gap: 1rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem;">
         <img id="sidebarAvatar" src="https://ui-avatars.com/api/?name=User&background=random" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-primary);">
         <div>
-            <div id="sidebarName" style="font-weight: 600; font-size: 0.9rem; color: white;">User</div>
-            <a href="profile.jsp" style="font-size: 0.75rem; color: var(--accent-primary); text-decoration: none;">View Profile</a>
+            <div id="sidebarName" style="font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">User</div>
+            <a href="profile.jsp" style="font-size: 0.75rem; color: var(--accent-primary); text-decoration: none; font-weight: 500;">View Profile</a>
         </div>
     </div>
 

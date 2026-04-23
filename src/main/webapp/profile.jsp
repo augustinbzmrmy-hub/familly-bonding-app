@@ -10,8 +10,8 @@
     <style>
         .profile-header { display: flex; align-items: center; gap: 2rem; margin-bottom: 3rem; }
         .profile-img-container { position: relative; width: 150px; height: 150px; }
-        .profile-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 4px solid var(--accent-primary); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        .upload-btn { position: absolute; bottom: 5px; right: 5px; background: var(--primary); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .profile-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 4px solid var(--accent-primary); box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .upload-btn { position: absolute; bottom: 5px; right: 5px; background: var(--primary); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .upload-btn:hover { transform: scale(1.1); background: var(--primary-hover); }
 
         .profile-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
