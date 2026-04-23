@@ -21,7 +21,11 @@
 <body>
     <div class="card-wrapper animate-fade-in">
         <div class="glass-card" style="padding: 2.5rem;">
-            <h2 class="header-title text-gradient">Create Account</h2>
+            <div class="header-container text-center" style="margin-bottom: 2.5rem; text-align: center;">
+                <img src="images/logo.png" alt="Family Bond Logo" style="width: 80px; height: auto; margin-bottom: 1rem;" class="animate-float">
+                <h1 class="text-gradient" style="font-size: 2.5rem; font-weight: 800; margin: 0;">Family Bond</h1>
+                <p style="color: var(--text-secondary); font-size: 1.1rem; margin-top: 0.5rem; font-weight: 500;">Create Account</p>
+            </div>
             <div id="errorMessage" class="error" style="display: none;"></div>
             
             <form id="registerForm">

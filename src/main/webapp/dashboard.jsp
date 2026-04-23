@@ -22,8 +22,11 @@
         <div class="main-content">
             <div class="header delay-100 animate-fade-in">
                 <div>
-                    <h1 style="margin:0; font-size: 2.2rem; font-weight: 700;" id="welcomeText">Welcome back!</h1>
-                    <p style="color: var(--text-secondary); margin: 0.5rem 0 0; font-size: 1.1rem;" id="roleText"></p>
+                <div id="welcomeContainer">
+                    <span style="display:block; font-size: 0.9rem; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.5rem; font-weight: 600;" class="animate-fade-in delay-100">Family Bond</span>
+                    <h1 style="margin:0; font-size: 2.2rem; font-weight: 700;" id="welcomeText" class="animate-fade-in delay-200">Welcome back!</h1>
+                    <p style="color: var(--text-secondary); margin: 0.5rem 0 0; font-size: 1.1rem;" id="roleText" class="animate-fade-in delay-300"></p>
+                </div>
                 </div>
                 <div class="user-profile">
                     <div class="avatar" id="avatarText">U</div>
@@ -74,7 +77,7 @@
                 const user = JSON.parse(localStorage.getItem('user'));
                 if (!user || !user.userId) throw new Error("No user session found. Please log in again.");
 
-                document.getElementById('welcomeText').textContent = `Welcome back, \${user.fullName}!`;
+                document.getElementById('welcomeText').textContent = `Welcome, \${user.fullName}!`;
                 document.getElementById('roleText').textContent = (user.role || '').replace("_", " ");
                 document.getElementById('avatarText').textContent = user.fullName.substring(0, 1).toUpperCase();
                 document.getElementById('userPoints').textContent = user.points || 0;

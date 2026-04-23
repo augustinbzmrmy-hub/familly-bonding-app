@@ -1,6 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <div class="sidebar animate-fade-in" style="animation-duration: 0.8s;">
-    <div class="logo text-gradient delay-100 animate-fade-in">Family Bonding</div>
+    <div class="logo text-gradient delay-100 animate-fade-in" style="display: flex; align-items: center; gap: 0.8rem;">
+        <img src="images/logo.png" alt="Logo" style="width: 32px; height: auto;">
+        Family Bond
+    </div>
     
     <div id="sidebarUser" class="delay-150 animate-fade-in" style="padding: 1.5rem; display: flex; align-items: center; gap: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 1rem;">
         <img id="sidebarAvatar" src="https://ui-avatars.com/api/?name=User&background=random" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-primary);">
